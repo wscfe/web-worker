@@ -26,6 +26,7 @@ jobs:
           cache: npm
           node-version-file: .nvmrc
           registry-url: 'https://registry.npmjs.org'
+          node-version: v20.11.0
 
       - name: Configure Git user
         run: |
