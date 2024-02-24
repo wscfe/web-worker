@@ -2,11 +2,13 @@ import executeWorker from './executeWorker';
 import remoteDependencyParser from './remoteDependencyParser';
 import { ETransferableType } from './status';
 
-const generateWorkerBlobUrl = (
-  fn: () => unknown,
-  deps: string[],
-  transferable: ETransferableType,
-) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const generateWorkerBlobUrl = <T>(params: {
+  fn: T;
+  deps: string[];
+  transferable: ETransferableType;
+}) => {
+  const { fn, deps, transferable } = params;
   const blobCode = `
     ${remoteDependencyParser(deps)};
     onmessage=(${executeWorker})({

@@ -10,9 +10,8 @@ export interface IWorkerResult<T> {
 }
 
 export interface TWorkerItem<
-  T extends (...fnArgs: unknown[]) => unknown = (
-    ...fnArgs: unknown[]
-  ) => unknown,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  T extends (...fnArgs: any[]) => any = (...fnArgs: any[]) => any,
 > {
   /**
    * 当前worker的实例
@@ -60,7 +59,8 @@ export class WebWorker {
   }
 
   // 初始化worker的基本信息
-  useWorker<T extends (...fnArgs: unknown[]) => unknown>(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  useWorker<T extends (...fnArgs: any[]) => any>(
     fn: T,
     options?: {
       timeout?: number;
@@ -94,11 +94,11 @@ export class WebWorker {
           reject,
         };
 
-        const blobUrl = generateWorkerBlobUrl(
-          workerItem.workerLogicFunc,
-          options?.remoteDependencies || [],
-          options?.transferable as ETransferableType,
-        );
+        const blobUrl = generateWorkerBlobUrl({
+          fn: workerItem.workerLogicFunc,
+          deps: options?.remoteDependencies || [],
+          transferable: options?.transferable as ETransferableType,
+        });
 
         workerItem.blobUrl = blobUrl;
         workerItem.worker = new Worker(blobUrl);
@@ -170,3 +170,5 @@ export class WebWorker {
     }
   }
 }
+
+export default WebWorker;
