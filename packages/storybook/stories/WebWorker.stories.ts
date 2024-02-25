@@ -1,4 +1,5 @@
-import { Button } from './Button';
+// import { Button } from './Button';
+import Button from '@web-worker/react-example/src/Button';
 
 // More on how to set up stories at: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {
@@ -24,22 +25,22 @@ export const Primary = {
   },
 };
 
-export const Secondary = {
-  args: {
-    label: 'Button',
-  },
-};
+// export const Secondary = {
+//   args: {
+//     label: 'Button',
+//   },
+// };
 
-export const Large = {
-  args: {
-    size: 'large',
-    label: 'Button',
-  },
-};
+// export const Large = {
+//   args: {
+//     size: 'large',
+//     label: 'Button',
+//   },
+// };
 
-export const Small = {
-  args: {
-    size: 'small',
-    label: 'Button',
-  },
-};
+// export const Small = {
+//   args: {
+//     size: 'small',
+//     label: 'Button',
+//   },
+// };

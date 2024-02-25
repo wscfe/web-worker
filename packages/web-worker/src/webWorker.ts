@@ -60,7 +60,7 @@ export class WebWorker {
 
   // 初始化worker的基本信息
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  useWorker<T extends (...fnArgs: any[]) => any>(
+  useWorker<T extends (fnArgs: Parameters<T>[0]) => any>(
     fn: T,
     options?: {
       timeout?: number;
@@ -69,7 +69,7 @@ export class WebWorker {
     },
   ): [
     TWorkerItem<T>,
-    (...fnArgs: Parameters<T>) => Promise<IWorkerResult<ReturnType<T>>>,
+    (fnArgs: Parameters<T>[0]) => Promise<IWorkerResult<ReturnType<T>>>,
   ] {
     const workerItem: TWorkerItem<T> = {
       worker: null,
@@ -87,7 +87,7 @@ export class WebWorker {
     this.workerList.push(workerItem);
 
     // Todo: 考虑worker长时间未执行完毕，的promise的pending 问题
-    const runWorkerItem = (...fnArgs: Parameters<T>) =>
+    const runWorkerItem = (fnArgs: Parameters<T>[0]) =>
       new Promise<IWorkerResult<ReturnType<T>>>((resolve, reject) => {
         workerItem.promiseRef = {
           resolve,
@@ -128,7 +128,22 @@ export class WebWorker {
           }, workerItem.timeout);
         }
 
-        workerItem.worker.postMessage([fnArgs]);
+        // @ts-ignore
+        function converter(key, val) {
+          if (
+            typeof val === 'function' ||
+            (val && val.constructor === RegExp)
+          ) {
+            return String(val);
+          }
+          return val;
+        }
+
+        // console.log(JSON.stringify(data, converter, 2));
+
+        workerItem.worker.postMessage([
+          JSON.parse(JSON.stringify(fnArgs, converter, 2)),
+        ]);
       });
 
     return [workerItem, runWorkerItem];

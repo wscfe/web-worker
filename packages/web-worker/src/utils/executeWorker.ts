@@ -2,15 +2,16 @@
 import { ETransferableType } from './status';
 
 interface JOB_RUNNER_OPTIONS {
-  fn: () => unknown;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  fn: (fnArgs: any) => unknown;
   transferable: ETransferableType;
 }
 
 const executeWorker =
   (options: JOB_RUNNER_OPTIONS): ((e: MessageEvent) => Promise<void>) =>
   (e: MessageEvent) => {
-    const [userFuncArgs] = e.data as [[]];
-    return Promise.resolve(options.fn(...userFuncArgs))
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return Promise.resolve(options.fn(e.data[0] || {}))
       .then((result) => {
         const isTransferable = (val: unknown) =>
           ('ArrayBuffer' in self && val instanceof ArrayBuffer) ||

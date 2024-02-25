@@ -46,3 +46,37 @@ class ConditionValidator<T = IMutableObject, K extends string = string> {
 }
 
 export default ConditionValidator;
+
+export const executeValidator = <
+  T = IMutableObject,
+  K extends string = string,
+>(params: {
+  conditionKeys: K[];
+  conditions: {
+    [index in K]?: (params: T) => string | React.ReactNode;
+  };
+  conditionSourceData: T;
+}): {
+  errorList: (string | React.ReactNode)[];
+} => {
+  const { conditionKeys, conditions, conditionSourceData } = params || {};
+  const errorList: (string | React.ReactNode)[] = [];
+  if (!Object.keys(conditions)?.length) return { errorList };
+
+  if (!conditionKeys?.length) return { errorList };
+
+  conditionKeys.forEach((conditionKey) => {
+    try {
+      const conditionFunc = new Function(`return ${conditions[conditionKey]}`);
+      const errorMsg = conditionFunc()(conditionSourceData);
+      if (!errorMsg) return;
+
+      errorList.push(errorMsg);
+    } catch (err) {
+      // todo：补充自定义日志上报
+      // console.log(err);
+    }
+  });
+
+  return { errorList };
+};

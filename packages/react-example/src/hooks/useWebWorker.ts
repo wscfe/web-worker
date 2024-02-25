@@ -3,7 +3,7 @@ import { WebWorker } from '@worker/web-worker/src/index';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 const useWebWorker = () => {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const workerItemRef = useRef<TWorkerItem | null>(null);
   const webWorkerInstanceRef = useRef<WebWorker | null>(null);
 
@@ -22,9 +22,11 @@ const useWebWorker = () => {
         webWorkerInstanceRef.current = webWorker;
 
         setLoading(true);
-        const res = await runWorkerItem(...fnParams);
+        const res = await runWorkerItem(fnParams);
+        setLoading(false);
         return res;
       } catch (err) {
+        console.log('err', err);
         setLoading(false);
       }
     },
